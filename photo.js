@@ -12,8 +12,8 @@ class Photo {
     photos.push(this);
   }
 
-  deleteFromStorage() {
-
+  deleteFromStorage(photos, index) {
+    photos.slice(index, 1);
   }
 
   updatePhoto() {
