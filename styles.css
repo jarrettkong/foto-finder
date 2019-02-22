@@ -77,6 +77,9 @@ input[type='text'] {
   height: 50px;
   height: 50px;
   padding-left: 15px;
+  font-size: 20px;
+  line-height: 50px;
+  color: grey;
 }
 
 .input-wrapper {
@@ -137,6 +140,10 @@ button:focus {
   font-size: 20px;
 }
 
+button:hover {
+  cursor: pointer;
+}
+
 #input-area {
   padding-bottom: 40px;
 }
@@ -144,12 +151,16 @@ button:focus {
 /* Photos area */
 
 #photo-area {
-  height: 100vh;
-  padding: 40px;
+  min-height: 50vh;
+  padding: 40px 0;
   background-color: #C2B2B4;
+}
+
+#photo-area .wrapper {
   display: grid;
-  grid-template-rows: repeat(autofill, 250px);
-  grid-gap: 40px;
+  grid-template-columns: repeat(auto-fill, 300px);
+  justify-items: center;
+  grid-row-gap: 40px;
 }
 
 .photo-card {
@@ -193,7 +204,7 @@ button:focus {
   background-color: #5B4447;
   display: flex;
   padding: 0 15px;
-  height: 50px;
+  height: 55px;
   justify-content: space-between;
   flex-direction: row;
   width: 100%;
@@ -203,4 +214,8 @@ button:focus {
 
 .card-button-container img {
   height: 30px;
+}
+
+.card-button-container img:hover {
+  cursor: pointer;
 }

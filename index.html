@@ -40,23 +40,22 @@
     </section>
   </div>
   <main id="photo-area">
-    <!-- <div class="wrapper"> -->
-      <!-- <template> -->
-      <article data-id class="photo-card">
-        <h2 contenteditable="true" class="photo-title">Chicago</h2>
-        <img src="images/test.jpg" alt="uploaded-photo" class="uploaded-photo">
-        <div>
-          <p contenteditable="true" class="photo-caption">Lorem ipsum dolor sit amet, consectetur adipisicing elit.</p>
-        </div>
-        <div class="card-button-container">
-          <img src="images/delete.svg" alt="delete" class="delete-icon">
-          <img src="images/favorite.svg" alt="favorite" class="favorite-icon">
-        </div>
-      </article>
-    <!-- </div> -->
+    <div class="wrapper"></div>
   </main>
-  <!-- </template> -->
-  <script src="idea.js"></script>
+  <template>
+    <article data-id class="photo-card">
+      <h2 contenteditable="true" class="photo-title">${title}</h2>
+      <img src="images/test.jpg" alt="uploaded-photo" class="uploaded-photo">
+      <div>
+        <p contenteditable="true" class="photo-caption">${caption}</p>
+      </div>
+      <div class="card-button-container">
+        <img src="images/delete.svg" alt="delete" class="delete-icon">
+        <img src="images/favorite.svg" alt="favorite" class="favorite-icon">
+      </div>
+    </article>
+  </template>
+  <script src="photo.js"></script>
   <script src="main.js"></script>
 </body>
 
