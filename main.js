@@ -14,20 +14,20 @@ const photoTemplate = document.querySelector('template');
 const photos = JSON.parse(localStorage.getItem('photos')) || [];
 const reader = new FileReader();
 
-
 // Event listeners
 
 titleInput.addEventListener('keypress', saveOnEnter);
 captionInput.addEventListener('keypress', saveOnEnter);
+titleInput.addEventListener('input', disableSave);
+captionInput.addEventListener('input', disableSave);
+uploadInput.addEventListener('input', disableSave);
 
 saveBtn.addEventListener('click', e => {
   e.preventDefault();
-  if (uploadInput.files[0]) {
-    reader.readAsDataURL(uploadInput.files[0]);
-    reader.onload = e => {
-      const newPhoto = addPhoto(e);
-      photoArea.appendChild(newPhoto);
-    }
+  reader.readAsDataURL(uploadInput.files[0]);
+  reader.onload = e => {
+    const newPhoto = addPhoto(e);
+    photoArea.appendChild(newPhoto);
   }
 });
 
@@ -44,6 +44,14 @@ favoritesBtn.addEventListener('click', e => {
 })
 
 // Functions
+
+function disableSave() {
+  if(titleInput.value !== '' && captionInput.value !== '' && uploadInput.files[0]) {
+    saveBtn.disabled = false;
+  } else {
+    saveBtn.disabled = true;
+  }
+}
 
 function blurInput(e) {
   if(e.key === "Enter") {
