@@ -1,7 +1,8 @@
 // Query selectors
 
 const uploadInput = document.getElementById('image-upload');
-const saveBtn = document.getElementById('save-button');
+const saveBtn = document.getElementById('save-btn');
+const favoritesBtn = document.getElementById('favorites-btn');
 const searchInput = document.querySelector('#search-input');
 const titleInput = document.querySelector('#title-input');
 const captionInput = document.querySelector('#caption-input');
@@ -13,7 +14,11 @@ const photoTemplate = document.querySelector('template');
 const photos = JSON.parse(localStorage.getItem('photos')) || [];
 const reader = new FileReader();
 
+
 // Event listeners
+
+titleInput.addEventListener('keypress', saveOnEnter);
+captionInput.addEventListener('keypress', saveOnEnter);
 
 saveBtn.addEventListener('click', e => {
   e.preventDefault();
@@ -26,8 +31,17 @@ saveBtn.addEventListener('click', e => {
   }
 });
 
-titleInput.addEventListener('keypress', saveOnEnter);
-captionInput.addEventListener('keypress', saveOnEnter);
+favoritesBtn.addEventListener('click', e => {
+  e.preventDefault();
+  if(favoritesBtn.innerText !== 'View All') {
+    var favorites = filterFavortites();
+    displayPhotos(favorites);
+    favoritesBtn.innerText = 'View All';
+  } else {
+    displayPhotos(photos);
+    favoritesBtn.innerText = `View ${countFavorites()} Favorite(s)`;
+  }
+})
 
 // Functions
 
@@ -82,6 +96,7 @@ function addCloneInfo(clone, photo) {
   clone.querySelector('.photo-title').innerText = photo.title;
   clone.querySelector('.uploaded-photo').src = `${photo.file}`;
   clone.querySelector('.photo-caption').innerText = photo.caption;
+  clone.querySelector('.favorite-icon').src = photo.favorite ? "images/favorite-active.svg" : "images/favorite.svg";
 }
 
 function addCloneListeners(clone) {
@@ -100,14 +115,40 @@ function removePhoto(e) {
   photoToDelete.deleteFromStorage(photos, i);
 }
 
-function toggleFavorite() {
-  console.log('favorite');
+function toggleFavorite(e) {
+  const i = getIndex(e);
+  const photoToFavorite = reinstantiatePhoto(photos, i);
+  photoToFavorite.updateFavorite(photos, i);
+  toggleIcon(photoToFavorite, e);
 }
 
-function displayPhotos() {
-  photos.forEach(photo => {
+function toggleIcon(photo, e) {
+  if(photo.favorite) {
+    e.target.src = 'images/favorite-active.svg';
+  } else {
+    e.target.src = 'images/favorite.svg';
+  }
+  favoritesBtn.innerText = `View ${countFavorites()} Favorite(s)`;
+}
+
+function countFavorites() {
+  var favorites = photos.filter(photo => photo.favorite);
+  favoritesBtn.innerText = `View ${favorites.length} Favorite(s)`;
+  return favorites.length;
+}
+
+function displayPhotos(album) {
+  photoArea.innerHTML = '';
+  album.forEach(photo => {
     photoArea.appendChild(createPhoto(photo));
   });
 }
 
-window.addEventListener('DOMContentLoaded', displayPhotos);
+function filterFavortites() {
+  return photos.filter(photo => photo.favorite);
+}
+
+window.addEventListener('DOMContentLoaded', e => {
+  favoritesBtn.innerText = `View ${countFavorites()} Favorite(s)`;
+  displayPhotos(photos)
+});

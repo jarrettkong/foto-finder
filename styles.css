@@ -120,7 +120,9 @@ button:focus {
   padding-bottom: 0;
 }
 
-#image-upload-label:hover {
+#image-upload-label:hover,
+button:hover,
+input[type='submit']:hover {
   cursor: pointer;
 }
 
@@ -139,10 +141,6 @@ input[type='submit'] {
   color: white;
   border: 0;
   font-size: 20px;
-}
-
-button:hover {
-  cursor: pointer;
 }
 
 #input-area {

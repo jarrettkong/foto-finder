@@ -19,11 +19,13 @@ class Photo {
   }
 
   updatePhoto(photos, index, editedContent, newText) {
-    if(editedContent === 'title') {
-      this.title = newText;
-    } else {
-      this.caption = newText;
-    }
+    editedContent === 'title' ? this.title = newText : this.caption = newText;
+    photos[index] = this;
+    localStorage.photos = JSON.stringify(photos);
+  }
+
+  updateFavorite(photos, index) {
+    this.favorite = !this.favorite;
     photos[index] = this;
     localStorage.photos = JSON.stringify(photos);
   }
