@@ -1,7 +1,8 @@
 // Query selectors
 
 const uploadInput = document.getElementById('image-upload');
-const saveBtn = document.getElementById('save-button');
+const saveBtn = document.getElementById('save-btn');
+const favoritesBtn = document.getElementById('favorites-btn');
 const searchInput = document.querySelector('#search-input');
 const titleInput = document.querySelector('#title-input');
 const captionInput = document.querySelector('#caption-input');
@@ -16,6 +17,9 @@ const reader = new FileReader();
 
 // Event listeners
 
+titleInput.addEventListener('keypress', saveOnEnter);
+captionInput.addEventListener('keypress', saveOnEnter);
+
 saveBtn.addEventListener('click', e => {
   e.preventDefault();
   if (uploadInput.files[0]) {
@@ -27,8 +31,17 @@ saveBtn.addEventListener('click', e => {
   }
 });
 
-titleInput.addEventListener('keypress', saveOnEnter);
-captionInput.addEventListener('keypress', saveOnEnter);
+favoritesBtn.addEventListener('click', e => {
+  e.preventDefault();
+  if(favoritesBtn.innerText !== 'View All') {
+    var favorites = filterFavortites();
+    displayPhotos(favorites);
+    favoritesBtn.innerText = 'View All';
+  } else {
+    displayPhotos(photos);
+    favoritesBtn.innerText = `View ${countFavorites()} Favorite(s)`;
+  }
+})
 
 // Functions
 
@@ -106,27 +119,36 @@ function toggleFavorite(e) {
   const i = getIndex(e);
   const photoToFavorite = reinstantiatePhoto(photos, i);
   photoToFavorite.updateFavorite(photos, i);
-  if(photoToFavorite.favorite) {
+  toggleIcon(photoToFavorite, e);
+}
+
+function toggleIcon(photo, e) {
+  if(photo.favorite) {
     e.target.src = 'images/favorite-active.svg';
   } else {
     e.target.src = 'images/favorite.svg';
   }
-  countFavorites();
+  favoritesBtn.innerText = `View ${countFavorites()} Favorite(s)`;
 }
 
 function countFavorites() {
   var favorites = photos.filter(photo => photo.favorite);
-  document.querySelector('#favorite-count').innerText = favorites.length;
+  favoritesBtn.innerText = `View ${favorites.length} Favorite(s)`;
   return favorites.length;
 }
 
 function displayPhotos(album) {
+  photoArea.innerHTML = '';
   album.forEach(photo => {
     photoArea.appendChild(createPhoto(photo));
   });
 }
 
+function filterFavortites() {
+  return photos.filter(photo => photo.favorite);
+}
+
 window.addEventListener('DOMContentLoaded', e => {
-  document.getElementById('favorite-count').innerText = countFavorites();
+  favoritesBtn.innerText = `View ${countFavorites()} Favorite(s)`;
   displayPhotos(photos)
 });
