@@ -121,7 +121,7 @@ button:focus {
 }
 
 #image-upload-label:hover,
-button:hover,
+#favorites-btn:hover,
 input[type='submit']:hover {
   cursor: pointer;
   background-color: #928284;
@@ -154,6 +154,10 @@ input[type='submit'] {
 }
 
 /* Photos area */
+
+h3 {
+  font-size: 30px;
+}
 
 #photo-area {
   min-height: 50vh;

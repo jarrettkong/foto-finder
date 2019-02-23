@@ -41,9 +41,26 @@ favoritesBtn.addEventListener('click', e => {
     displayPhotos(photos);
     favoritesBtn.innerText = `View ${countFavorites()} Favorite(s)`;
   }
-})
+});
+
+searchInput.addEventListener('input', e => {
+  var query = searchInput.value;
+  var results = getSearchResults(photos, query);
+  displayPhotos(results);
+});
+
+window.addEventListener('DOMContentLoaded', e => {
+  favoritesBtn.innerText = `View ${countFavorites()} Favorite(s)`;
+  if(photos.length > 0) {
+    displayPhotos(photos)
+  }
+});
 
 // Functions
+
+function getSearchResults(album, query) {
+  return album.filter(photo => photo.title.toLowerCase().includes(query) || photo.caption.toLowerCase().includes(query));
+}
 
 function disableSave() {
   if(titleInput.value !== '' && captionInput.value !== '' && uploadInput.files[0]) {
@@ -88,8 +105,8 @@ function addPhoto(e) {
   return photoToAdd;
 }
 
-function reinstantiatePhoto(photos, i) {
-  return new Photo(photos[i].id, photos[i].title, photos[i].caption, photos[i].file, photos[i].favorite);
+function reinstantiatePhoto(album, i) {
+  return new Photo(album[i].id, album[i].title, album[i].caption, album[i].file, album[i].favorite);
 }
 
 function createPhoto(photo) {
@@ -120,6 +137,7 @@ function removePhoto(e) {
   e.target.closest('article').remove();
   const i = getIndex(e);
   const photoToDelete = reinstantiatePhoto(photos, i);
+  // = new Photo(photos[i].id, title, caption, file, favorite);
   photoToDelete.deleteFromStorage(photos, i);
 }
 
@@ -155,8 +173,3 @@ function displayPhotos(album) {
 function filterFavortites() {
   return photos.filter(photo => photo.favorite);
 }
-
-window.addEventListener('DOMContentLoaded', e => {
-  favoritesBtn.innerText = `View ${countFavorites()} Favorite(s)`;
-  displayPhotos(photos)
-});
