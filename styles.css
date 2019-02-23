@@ -131,7 +131,8 @@ button:focus {
   margin: auto;
 }
 
-.form-button-container > button {
+.form-button-container > button,
+input[type='submit'] {
   width: 42.5%;
   height: 50px;
   background-color: #5B4447;

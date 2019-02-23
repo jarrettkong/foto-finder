@@ -26,15 +26,30 @@ saveBtn.addEventListener('click', e => {
   }
 });
 
+titleInput.addEventListener('keypress', saveOnEnter);
+captionInput.addEventListener('keypress', saveOnEnter);
+
 // Functions
+
+function blurInput(e) {
+  if(e.key === "Enter") {
+    e.preventDefault();
+    e.target.blur();
+  }
+}
+
+function saveOnEnter(e) {
+  if(e.key === "Enter") {
+    e.preventDefault();
+    saveBtn.click();
+  }
+}
 
 function saveEdits(editedContent) {
   return function(e) {
     const i = getIndex(e);
     const photoToEdit = reinstantiatePhoto(photos, i);
-    photoToEdit.updatePhoto(photos, editedContent, e.target.innerText);
-    photos[i] = photoToEdit;
-    localStorage.photos = JSON.stringify(photos);
+    photoToEdit.updatePhoto(photos, i, editedContent, e.target.innerText);
   }
 }
 
@@ -70,6 +85,8 @@ function addCloneInfo(clone, photo) {
 }
 
 function addCloneListeners(clone) {
+  clone.querySelector('.photo-title').addEventListener('keypress', blurInput);
+  clone.querySelector('.photo-caption').addEventListener('keypress', blurInput);
   clone.querySelector('.photo-title').addEventListener('blur', saveEdits('title'));
   clone.querySelector('.photo-caption').addEventListener('blur', saveEdits('caption'));
   clone.querySelector('.favorite-icon').addEventListener('click', toggleFavorite);

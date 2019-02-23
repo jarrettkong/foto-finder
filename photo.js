@@ -18,12 +18,14 @@ class Photo {
     localStorage.photos = JSON.stringify(photos);
   }
 
-  updatePhoto(photos, editedContent, newText) {
+  updatePhoto(photos, index, editedContent, newText) {
     if(editedContent === 'title') {
       this.title = newText;
     } else {
       this.caption = newText;
     }
+    photos[index] = this;
+    localStorage.photos = JSON.stringify(photos);
   }
 
 }
