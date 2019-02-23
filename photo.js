@@ -14,7 +14,8 @@ class Photo {
   }
 
   deleteFromStorage(photos, index) {
-    photos.slice(index, 1);
+    photos.splice(index, 1);
+    localStorage.photos = JSON.stringify(photos);
   }
 
   updatePhoto() {

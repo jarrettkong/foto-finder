@@ -30,13 +30,15 @@ saveBtn.addEventListener('click', e => {
 
 function getIndex(e) {
   const parent = e.target.closest('article');
-  const parentID = parent.dataset.id;
+  const parentID = parseInt(parent.dataset.id);
   return photos.findIndex(photo => photo.id === parentID);
 }
 
 function addPhoto(e) {
-  let newPhoto = createPhoto(emptyPhoto);
-  return newPhoto;
+  const newPhoto = new Photo(Date.now(), titleInput.value, captionInput.value, e.target.result);
+  newPhoto.saveToStorage(photos);
+  const photoToAdd = createPhoto(newPhoto);
+  return photoToAdd;
 }
 
 function reinstantiatePhoto(photo) {
@@ -64,6 +66,9 @@ function addCloneListeners(clone) {
 
 function removePhoto(e) {
   e.target.closest('article').remove();
+  const i = getIndex(e);
+  const photoToDelete = reinstantiatePhoto(photos, i);
+  photoToDelete.deleteFromStorage(photos, i);
 }
 
 function toggleFavorite() {
@@ -72,8 +77,7 @@ function toggleFavorite() {
 
 function displayPhotos() {
   photos.forEach(photo => {
-    newPhoto = reinstantiatePhoto(photo);
-    photoArea.appendChild(createPhoto(newPhoto));
+    photoArea.appendChild(createPhoto(photo));
   });
 }
 
