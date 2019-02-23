@@ -10,10 +10,12 @@ class Photo {
 
   saveToStorage(photos) {
     photos.push(this);
+    localStorage.photos = JSON.stringify(photos);
   }
 
   deleteFromStorage(photos, index) {
-    photos.slice(index, 1);
+    photos.splice(index, 1);
+    localStorage.photos = JSON.stringify(photos);
   }
 
   updatePhoto() {

@@ -20,28 +20,32 @@ saveBtn.addEventListener('click', e => {
   if (uploadInput.files[0]) {
     reader.readAsDataURL(uploadInput.files[0]);
     reader.onload = e => {
-      let emptyPhoto = createPhoto(e);
-      let newPhoto = addPhotoData(emptyPhoto);
+      const newPhoto = addPhoto(e);
       photoArea.appendChild(newPhoto);
     }
   }
 });
 
+// Functions
+
 function getIndex(e) {
   const parent = e.target.closest('article');
-  const parentID = parent.dataset.id;
-  return photos.findIndex(photo => {
-    return photo.id === parentID;
-  });
+  const parentID = parseInt(parent.dataset.id);
+  return photos.findIndex(photo => photo.id === parentID);
 }
 
-function createPhoto(e) {
-  let newPhoto = new Photo(Date.now(), titleInput.value, captionInput.value, e.target.result);
+function addPhoto(e) {
+  const newPhoto = new Photo(Date.now(), titleInput.value, captionInput.value, e.target.result);
   newPhoto.saveToStorage(photos);
-  return newPhoto;
+  const photoToAdd = createPhoto(newPhoto);
+  return photoToAdd;
 }
 
-function addPhotoData(photo) {
+function reinstantiatePhoto(photo) {
+  return new Photo(photo.id, photo.title, photo.caption, photo.file, photo.favorite);
+}
+
+function createPhoto(photo) {
   let photoClone = photoTemplate.content.cloneNode(true);
   addCloneInfo(photoClone, photo);
   addCloneListeners(photoClone);
@@ -62,8 +66,19 @@ function addCloneListeners(clone) {
 
 function removePhoto(e) {
   e.target.closest('article').remove();
+  const i = getIndex(e);
+  const photoToDelete = reinstantiatePhoto(photos, i);
+  photoToDelete.deleteFromStorage(photos, i);
 }
 
 function toggleFavorite() {
   console.log('favorite');
 }
+
+function displayPhotos() {
+  photos.forEach(photo => {
+    photoArea.appendChild(createPhoto(photo));
+  });
+}
+
+window.addEventListener('DOMContentLoaded', displayPhotos);
