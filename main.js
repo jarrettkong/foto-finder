@@ -13,6 +13,7 @@ const photoTemplate = document.querySelector('template');
 const photos = JSON.parse(localStorage.getItem('photos')) || [];
 const reader = new FileReader();
 
+
 // Event listeners
 
 saveBtn.addEventListener('click', e => {
@@ -82,6 +83,7 @@ function addCloneInfo(clone, photo) {
   clone.querySelector('.photo-title').innerText = photo.title;
   clone.querySelector('.uploaded-photo').src = `${photo.file}`;
   clone.querySelector('.photo-caption').innerText = photo.caption;
+  clone.querySelector('.favorite-icon').src = photo.favorite ? "images/favorite-active.svg" : "images/favorite.svg";
 }
 
 function addCloneListeners(clone) {
@@ -100,14 +102,31 @@ function removePhoto(e) {
   photoToDelete.deleteFromStorage(photos, i);
 }
 
-function toggleFavorite() {
-  console.log('favorite');
+function toggleFavorite(e) {
+  const i = getIndex(e);
+  const photoToFavorite = reinstantiatePhoto(photos, i);
+  photoToFavorite.updateFavorite(photos, i);
+  if(photoToFavorite.favorite) {
+    e.target.src = 'images/favorite-active.svg';
+  } else {
+    e.target.src = 'images/favorite.svg';
+  }
+  countFavorites();
 }
 
-function displayPhotos() {
-  photos.forEach(photo => {
+function countFavorites() {
+  var favorites = photos.filter(photo => photo.favorite);
+  document.querySelector('#favorite-count').innerText = favorites.length;
+  return favorites.length;
+}
+
+function displayPhotos(album) {
+  album.forEach(photo => {
     photoArea.appendChild(createPhoto(photo));
   });
 }
 
-window.addEventListener('DOMContentLoaded', displayPhotos);
+window.addEventListener('DOMContentLoaded', e => {
+  document.getElementById('favorite-count').innerText = countFavorites();
+  displayPhotos(photos)
+});
