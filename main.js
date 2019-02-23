@@ -28,6 +28,16 @@ saveBtn.addEventListener('click', e => {
 
 // Functions
 
+function saveEdits(editedContent) {
+  return function(e) {
+    const i = getIndex(e);
+    const photoToEdit = reinstantiatePhoto(photos, i);
+    photoToEdit.updatePhoto(photos, editedContent, e.target.innerText);
+    photos[i] = photoToEdit;
+    localStorage.photos = JSON.stringify(photos);
+  }
+}
+
 function getIndex(e) {
   const parent = e.target.closest('article');
   const parentID = parseInt(parent.dataset.id);
@@ -41,8 +51,8 @@ function addPhoto(e) {
   return photoToAdd;
 }
 
-function reinstantiatePhoto(photo) {
-  return new Photo(photo.id, photo.title, photo.caption, photo.file, photo.favorite);
+function reinstantiatePhoto(photos, i) {
+  return new Photo(photos[i].id, photos[i].title, photos[i].caption, photos[i].file, photos[i].favorite);
 }
 
 function createPhoto(photo) {
@@ -60,6 +70,8 @@ function addCloneInfo(clone, photo) {
 }
 
 function addCloneListeners(clone) {
+  clone.querySelector('.photo-title').addEventListener('blur', saveEdits('title'));
+  clone.querySelector('.photo-caption').addEventListener('blur', saveEdits('caption'));
   clone.querySelector('.favorite-icon').addEventListener('click', toggleFavorite);
   clone.querySelector('.delete-icon').addEventListener('click', removePhoto);
 }
