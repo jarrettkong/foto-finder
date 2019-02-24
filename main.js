@@ -53,7 +53,6 @@ favoritesBtn.addEventListener('click', e => {
 searchInput.addEventListener('input', e => {
   const query = searchInput.value;
   const results = getSearchResults(currentPhotos, query);
-  currentPhotos = results;
   displayPhotos(results);
   seeMoreBtn.innerText = 'See More'
 });
