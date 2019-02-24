@@ -44,6 +44,7 @@ favoritesBtn.addEventListener('click', e => {
   } else {
     currentPhotos = photos;
     favoritesBtn.innerText = `View ${countFavorites()} Favorite(s)`;
+    searchInput.value = '';
   }
   displayPhotos(currentPhotos);
   seeMoreBtn.innerText = 'See More'
@@ -173,7 +174,18 @@ function toggleIcon(photo, e) {
   } else {
     e.target.src = 'images/favorite.svg';
   }
-  favoritesBtn.innerText = `View ${countFavorites()} Favorite(s)`;
+  updateFavoriteButton();
+  if (favoritesBtn.innerText === 'View All') {
+    e.target.closest('article').remove();
+    currentPhotos = getFavorites(photos);
+    displayPhotos(currentPhotos);
+  }
+}
+
+function updateFavoriteButton() {
+  if(favoritesBtn.innerText !== 'View All') {
+    favoritesBtn.innerText = `View ${countFavorites()} Favorite(s)`;
+  }
 }
 
 function countFavorites() {
@@ -199,5 +211,5 @@ function toggleView(album, size) {
 }
 
 function filterFavortites(photos) {
-  return photos.filter(photo => photo.favorite);
+  return favorites = photos.filter(photo => photo.favorite);
 }
