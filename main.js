@@ -121,6 +121,7 @@ function getIndex(e) {
 
 function addPhoto(e) {
   const newPhoto = new Photo(Date.now(), titleInput.value, captionInput.value, e.target.result);
+  photos.push(newPhoto);
   newPhoto.saveToStorage(photos);
   const photoToAdd = createPhoto(newPhoto);
   return photoToAdd;
