@@ -122,7 +122,8 @@ button:focus {
 
 #image-upload-label:hover,
 #favorites-btn:hover,
-input[type='submit']:hover {
+input[type='submit']:hover,
+.see-more-btn:hover {
   cursor: pointer;
   background-color: #928284;
 }
@@ -140,13 +141,19 @@ input[type='submit']:disabled {
 }
 
 .form-button-container > button,
-input[type='submit'] {
+input[type='submit'],
+.see-more-btn {
   width: 42.5%;
   height: 50px;
   background-color: #5B4447;
   color: white;
   border: 0;
   font-size: 20px;
+}
+
+.see-more-btn {
+  margin-top: 40px;
+  width: 250px;
 }
 
 #input-area {
@@ -163,6 +170,7 @@ h3 {
   min-height: 50vh;
   padding: 40px 0;
   background-color: #C2B2B4;
+  text-align: center;
 }
 
 #photo-area .wrapper {

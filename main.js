@@ -8,6 +8,7 @@ const titleInput = document.querySelector('#title-input');
 const captionInput = document.querySelector('#caption-input');
 const photoArea = document.querySelector('#photo-area .wrapper');
 const photoTemplate = document.querySelector('template');
+const seeMoreBtn = document.querySelector('.see-more-btn');
 
 // Global variables
 
@@ -27,14 +28,14 @@ saveBtn.addEventListener('click', e => {
   reader.readAsDataURL(uploadInput.files[0]);
   reader.onload = e => {
     const newPhoto = addPhoto(e);
-    photoArea.appendChild(newPhoto);
+    photoArea.insertBefore(newPhoto, photoArea.firstChild);
   }
 });
 
 favoritesBtn.addEventListener('click', e => {
   e.preventDefault();
   if(favoritesBtn.innerText !== 'View All') {
-    var favorites = filterFavortites();
+    const favorites = filterFavortites();
     displayPhotos(favorites);
     favoritesBtn.innerText = 'View All';
   } else {
@@ -44,9 +45,20 @@ favoritesBtn.addEventListener('click', e => {
 });
 
 searchInput.addEventListener('input', e => {
-  var query = searchInput.value;
-  var results = getSearchResults(photos, query);
+  const query = searchInput.value;
+  const results = getSearchResults(photos, query);
   displayPhotos(results);
+});
+
+seeMoreBtn.addEventListener('click', e => {
+  e.preventDefault();
+  if(seeMoreBtn.innerText === 'See More') {
+    seeMoreBtn.innerText = 'See Less';
+    displayPhotos(photos, photos.length);
+  } else {
+    seeMoreBtn.innerText = 'See More';
+    displayPhotos(photos);
+  }
 });
 
 window.addEventListener('DOMContentLoaded', e => {
@@ -110,7 +122,7 @@ function reinstantiatePhoto(album, i) {
 }
 
 function createPhoto(photo) {
-  let photoClone = photoTemplate.content.cloneNode(true);
+  const photoClone = photoTemplate.content.cloneNode(true);
   addCloneInfo(photoClone, photo);
   addCloneListeners(photoClone);
   return photoClone;
@@ -137,7 +149,6 @@ function removePhoto(e) {
   e.target.closest('article').remove();
   const i = getIndex(e);
   const photoToDelete = reinstantiatePhoto(photos, i);
-  // = new Photo(photos[i].id, title, caption, file, favorite);
   photoToDelete.deleteFromStorage(photos, i);
 }
 
@@ -158,16 +169,25 @@ function toggleIcon(photo, e) {
 }
 
 function countFavorites() {
-  var favorites = photos.filter(photo => photo.favorite);
+  const favorites = photos.filter(photo => photo.favorite);
   favoritesBtn.innerText = `View ${favorites.length} Favorite(s)`;
   return favorites.length;
 }
 
-function displayPhotos(album) {
+function displayPhotos(album, size = 10) {
+  const photosToShow = toggleView(album, size);
   photoArea.innerHTML = '';
-  album.forEach(photo => {
-    photoArea.appendChild(createPhoto(photo));
+  photosToShow.forEach(photo => {
+    photoArea.insertBefore(createPhoto(photo), photoArea.firstChild);
   });
+}
+
+function toggleView(album, size) {
+  if(album.length < 10) {
+    return album;
+  } else {
+    return album.slice(album.length - size, album.length);
+  }
 }
 
 function filterFavortites() {
