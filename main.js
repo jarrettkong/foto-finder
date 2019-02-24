@@ -9,6 +9,7 @@ const captionInput = document.querySelector('#caption-input');
 const photoArea = document.querySelector('#photo-area .wrapper');
 const photoTemplate = document.querySelector('template');
 const seeMoreBtn = document.querySelector('.see-more-btn');
+const emptyText = document.querySelector('h3');
 
 // Global variables
 
@@ -29,10 +30,10 @@ saveBtn.addEventListener('click', e => {
   reader.readAsDataURL(uploadInput.files[0]);
   reader.onload = e => {
     const newPhoto = addPhoto(e);
-    currentPhotos = photos;
     photoArea.insertBefore(newPhoto, photoArea.firstChild);
-    displayPhotos(currentPhotos);
+    displayPhotos(photos);
     seeMoreBtn.innerText = 'See More'
+    hideElement(emptyText, 'true');
   }
 });
 
@@ -43,7 +44,7 @@ favoritesBtn.addEventListener('click', e => {
     favoritesBtn.innerText = 'View All';
   } else {
     currentPhotos = photos;
-    favoritesBtn.innerText = `View ${countFavorites()} Favorite(s)`;
+    updateFavoriteButton();
     searchInput.value = '';
   }
   displayPhotos(currentPhotos);
@@ -69,8 +70,9 @@ seeMoreBtn.addEventListener('click', e => {
 });
 
 window.addEventListener('DOMContentLoaded', e => {
-  favoritesBtn.innerText = `View ${countFavorites()} Favorite(s)`;
+  updateFavoriteButton();
   if(photos.length > 0) {
+    hideElement(emptyText, 'true');
     displayPhotos(photos)
   }
 });
@@ -157,7 +159,13 @@ function removePhoto(e) {
   const i = getIndex(e);
   const photoToDelete = reinstantiatePhoto(photos, i);
   photoToDelete.deleteFromStorage(photos, i);
+  photos.length > 0 ? hideElement(emptyText, 'true') : hideElement(emptyText, 'false');
+  updateFavoriteButton();
   displayPhotos(currentPhotos);
+}
+
+function checkLength(album) {
+  album.length <= 10 ? hideElement(seeMoreBtn, 'true') : hideElement(seeMoreBtn, 'false');
 }
 
 function toggleFavorite(e) {
@@ -176,20 +184,19 @@ function toggleIcon(photo, e) {
   updateFavoriteButton();
   if (favoritesBtn.innerText === 'View All') {
     e.target.closest('article').remove();
-    currentPhotos = getFavorites(photos);
+    currentPhotos = filterFavortites(photos);
     displayPhotos(currentPhotos);
   }
 }
 
 function updateFavoriteButton() {
   if(favoritesBtn.innerText !== 'View All') {
-    favoritesBtn.innerText = `View ${countFavorites()} Favorite(s)`;
+    favoritesBtn.innerText = `View ${countFavorites(photos)} Favorite(s)`;
   }
 }
 
-function countFavorites() {
+function countFavorites(photos) {
   const favorites = photos.filter(photo => photo.favorite);
-  favoritesBtn.innerText = `View ${favorites.length} Favorite(s)`;
   return favorites.length;
 }
 
@@ -199,6 +206,15 @@ function displayPhotos(album, size = 10) {
   photosToShow.forEach(photo => {
     photoArea.insertBefore(createPhoto(photo), photoArea.firstChild);
   });
+  checkLength(album);
+}
+
+function hideElement(element, status) {
+    if(status === 'true') {
+    element.classList.add('hidden');
+  } else {
+    element.classList.remove('hidden');
+  }
 }
 
 function toggleView(album, size) {

@@ -236,3 +236,7 @@ h3 {
 .card-button-container img:hover {
   cursor: pointer;
 }
+
+.hidden {
+  display: none;
+}
