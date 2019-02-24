@@ -14,6 +14,7 @@ const seeMoreBtn = document.querySelector('.see-more-btn');
 
 const photos = JSON.parse(localStorage.getItem('photos')) || [];
 const reader = new FileReader();
+let currentPhotos = photos;
 
 // Event listeners
 
@@ -28,36 +29,42 @@ saveBtn.addEventListener('click', e => {
   reader.readAsDataURL(uploadInput.files[0]);
   reader.onload = e => {
     const newPhoto = addPhoto(e);
+    currentPhotos = photos;
     photoArea.insertBefore(newPhoto, photoArea.firstChild);
+    displayPhotos(currentPhotos);
+    seeMoreBtn.innerText = 'See More'
   }
 });
 
 favoritesBtn.addEventListener('click', e => {
   e.preventDefault();
   if(favoritesBtn.innerText !== 'View All') {
-    const favorites = filterFavortites();
-    displayPhotos(favorites);
+    currentPhotos = filterFavortites(photos);
     favoritesBtn.innerText = 'View All';
   } else {
-    displayPhotos(photos);
+    currentPhotos = photos;
     favoritesBtn.innerText = `View ${countFavorites()} Favorite(s)`;
   }
+  displayPhotos(currentPhotos);
+  seeMoreBtn.innerText = 'See More'
 });
 
 searchInput.addEventListener('input', e => {
   const query = searchInput.value;
-  const results = getSearchResults(photos, query);
+  const results = getSearchResults(currentPhotos, query);
+  currentPhotos = results;
   displayPhotos(results);
+  seeMoreBtn.innerText = 'See More'
 });
 
 seeMoreBtn.addEventListener('click', e => {
   e.preventDefault();
   if(seeMoreBtn.innerText === 'See More') {
     seeMoreBtn.innerText = 'See Less';
-    displayPhotos(photos, photos.length);
+    displayPhotos(currentPhotos, currentPhotos.length);
   } else {
     seeMoreBtn.innerText = 'See More';
-    displayPhotos(photos);
+    displayPhotos(currentPhotos);
   }
 });
 
@@ -150,6 +157,7 @@ function removePhoto(e) {
   const i = getIndex(e);
   const photoToDelete = reinstantiatePhoto(photos, i);
   photoToDelete.deleteFromStorage(photos, i);
+  displayPhotos(currentPhotos);
 }
 
 function toggleFavorite(e) {
@@ -190,6 +198,6 @@ function toggleView(album, size) {
   }
 }
 
-function filterFavortites() {
+function filterFavortites(photos) {
   return photos.filter(photo => photo.favorite);
 }
