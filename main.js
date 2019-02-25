@@ -20,9 +20,11 @@ let currentPhotos = photos;
 // Event listeners
 
 titleInput.addEventListener('keypress', saveOnEnter);
-captionInput.addEventListener('keypress', saveOnEnter);
 titleInput.addEventListener('input', disableSave);
+titleInput.addEventListener('input', countCharacters('title'));
+captionInput.addEventListener('keypress', saveOnEnter);
 captionInput.addEventListener('input', disableSave);
+captionInput.addEventListener('input', countCharacters('caption'));
 uploadInput.addEventListener('input', disableSave);
 searchInput.addEventListener('input', search);
 saveBtn.addEventListener('click', getPhotoData);
@@ -42,9 +44,9 @@ function addPhoto(e) {
 
 function addCloneInfo(clone, photo) {
   clone.querySelector('article').dataset.id = photo.id;
-  clone.querySelector('.photo-title').innerText = photo.title;
-  clone.querySelector('.uploaded-photo').src = `${photo.file}`;
-  clone.querySelector('.photo-caption').innerText = photo.caption;
+  clone.querySelector('.photo-title').value = photo.title;
+  clone.querySelector('.uploaded-photo').src = photo.file;
+  clone.querySelector('.photo-caption').value = photo.caption;
   clone.querySelector('.favorite-icon').src = photo.favorite ? "images/favorite-active.svg" : "images/favorite.svg";
 }
 
@@ -66,6 +68,16 @@ function blurInput(e) {
 
 function checkLength(album) {
   album.length <= 10 ? hideElement(seeMoreBtn, 'true') : hideElement(seeMoreBtn, 'false');
+}
+
+function countCharacters(inputName) {
+  return function(e) {
+    if(inputName === 'title') {
+      document.querySelector('#title-count span').innerText = titleInput.value.length;
+    } else {
+      document.querySelector('#caption-count span').innerText = captionInput.value.length;
+    }
+  }
 }
 
 function countFavorites(photos) {
@@ -169,7 +181,7 @@ function saveEdits(editedContent) {
   return function(e) {
     const i = getIndex(e);
     const photoToEdit = reinstantiatePhoto(photos, i);
-    photoToEdit.updatePhoto(photos, i, editedContent, e.target.innerText);
+    photoToEdit.updatePhoto(photos, i, editedContent, e.target.value);
   }
 }
 

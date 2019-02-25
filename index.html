@@ -50,12 +50,14 @@
   </main>
   <template>
     <article data-id class="photo-card">
-      <h2 contenteditable="true" class="photo-title">${title}</h2>
+      <div class="photo-title-container">
+        <textarea class="photo-title" maxlength=20>${title}</textarea>
+      </div>
       <div class="photo-container">
         <img src="images/test.jpg" alt="uploaded-photo" class="uploaded-photo">
       </div>
       <div class="caption-container">
-        <p contenteditable="true" class="photo-caption">${caption}</p>
+        <textarea class="photo-caption" maxlength=70>${caption}</textarea>
       </div>
       <div class="card-button-container">
         <img src="images/delete.svg" alt="delete" class="delete-icon">
