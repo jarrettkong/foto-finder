@@ -86,7 +86,7 @@ function createPhoto(photo) {
 }
 
 function disableSave() {
-  if(titleInput.value !== '' && captionInput.value !== '' && uploadInput.files[0]) {
+  if(titleInput.value && captionInput.value && uploadInput.files[0]) {
     saveBtn.disabled = false;
   } else {
     saveBtn.disabled = true;
@@ -158,9 +158,9 @@ function removePhoto(e) {
   const photoToDelete = reinstantiatePhoto(photos, i);
   photoToDelete.deleteFromStorage(photos, i);
   photos.length > 0 ? hideElement(emptyText, true) : hideElement(emptyText, false);
-  if(favoritesBtn.innerText !== 'View All') {
-     toggleFavoriteButton();
-     checkLength(photosToDisplay);
+  if (favoritesBtn.innerText !== 'View All') {
+    favoritesBtn.innerText = `View ${filterFavortites(photos).length} Favorite(s)`;
+    displayPhotos(photosToDisplay);
   }
 }
 
@@ -171,7 +171,7 @@ function resetFields() {
   captionCount.innerText = 0;
   searchInput.value = '';
   seeMoreBtn.innerText = 'See More';
-  saveBtn.disabeld = true;
+  saveBtn.disabled = true;
 }
 
 function saveOnEnter(e) {
