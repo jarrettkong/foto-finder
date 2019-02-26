@@ -161,6 +161,8 @@ function removePhoto(e) {
   if (favoritesBtn.innerText !== 'View All') {
     favoritesBtn.innerText = `View ${filterFavortites(photos).length} Favorite(s)`;
     displayPhotos(photosToDisplay);
+  } else {
+    displayPhotos(filterFavortites(photos));
   }
 }
 
