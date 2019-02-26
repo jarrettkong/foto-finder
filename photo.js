@@ -19,7 +19,7 @@ class Photo {
 
   updatePhoto(photos, index, editedContent, newText) {
     editedContent === 'title' ? this.title = newText : this.caption = newText;
-    photos[index] = this;
+    photos.splice(index, 1, this);
     this.saveToStorage(photos);
   }
 

@@ -160,7 +160,8 @@ function removePhoto(e) {
   photos.length > 0 ? hideElement(emptyText, true) : hideElement(emptyText, false);
   if(favoritesBtn.innerText !== 'View All') {
      toggleFavoriteButton();
-   }
+     checkLength(photosToDisplay);
+  }
 }
 
 function resetFields() {
@@ -170,6 +171,7 @@ function resetFields() {
   captionCount.innerText = 0;
   searchInput.value = '';
   seeMoreBtn.innerText = 'See More';
+  saveBtn.disabeld = true;
 }
 
 function saveOnEnter(e) {
