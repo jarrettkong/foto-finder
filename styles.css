@@ -177,6 +177,7 @@ input[type='submit']:disabled {
 
 h3 {
   font-size: 30px;
+  color: #8C7D83;
 }
 
 #photo-area {
@@ -198,7 +199,7 @@ h3 {
   height: 325px;
   width: 250px;
   background-color: white;
-  border: 2px solid #5B4447;
+  border: 2px solid #8C7D83;
 }
 
 .photo-title-container {
@@ -217,10 +218,6 @@ h3 {
   font-weight: 600;
   line-height: 1.3;
   margin: 0 auto;
-}
-
-.photo-title {
-  line-height: 100%;
 }
 
 .photo-container {

@@ -43,7 +43,7 @@
     </section>
   </div>
   <main id="photo-area">
-    <h3>You have not uploaded any photos!</h3>
+    <h3>NO PHOTOS YET</h3>
     <div class="wrapper">
     </div>
     <button class="see-more-btn hidden">See More</button>
@@ -51,13 +51,13 @@
   <template>
     <article data-id class="photo-card">
       <div class="photo-title-container">
-        <textarea class="photo-title" maxlength=20>${title}</textarea>
+        <textarea class="photo-title" maxlength=20 rows=1>${title}</textarea>
       </div>
       <div class="photo-container">
         <img src="images/test.jpg" alt="uploaded-photo" class="uploaded-photo">
       </div>
       <div class="caption-container">
-        <textarea class="photo-caption" maxlength=70>${caption}</textarea>
+        <textarea class="photo-caption" maxlength=70 rows=3>${caption}</textarea>
       </div>
       <div class="card-button-container">
         <img src="images/delete.svg" alt="delete" class="delete-icon">
