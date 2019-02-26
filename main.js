@@ -1,40 +1,42 @@
 // Query selectors
 
-const uploadInput = document.getElementById('image-upload');
-const saveBtn = document.getElementById('save-btn');
-const favoritesBtn = document.getElementById('favorites-btn');
-const searchInput = document.querySelector('#search-input');
-const titleInput = document.querySelector('#title-input');
+const captionCount = document.querySelector('#caption-count span');
 const captionInput = document.querySelector('#caption-input');
+const emptyText = document.querySelector('h3');
+const favoritesBtn = document.getElementById('favorites-btn');
 const photoArea = document.querySelector('#photo-area .wrapper');
 const photoTemplate = document.querySelector('template');
+const saveBtn = document.getElementById('save-btn');
+const searchInput = document.querySelector('#search-input');
 const seeMoreBtn = document.querySelector('.see-more-btn');
-const emptyText = document.querySelector('h3');
+const titleCount = document.querySelector('#title-count span');
+const titleInput = document.querySelector('#title-input');
+const uploadInput = document.getElementById('image-upload');
 
 // Global variables
 
 const photos = JSON.parse(localStorage.getItem('photos')) || [];
 const reader = new FileReader();
-let currentPhotos = photos;
+let photosToDisplay = photos;
 
 // Event listeners
 
 titleInput.addEventListener('keypress', saveOnEnter);
 titleInput.addEventListener('input', disableSave);
-titleInput.addEventListener('input', countCharacters('title'));
+titleInput.addEventListener('input', countCharacters(titleCount));
 captionInput.addEventListener('keypress', saveOnEnter);
 captionInput.addEventListener('input', disableSave);
-captionInput.addEventListener('input', countCharacters('caption'));
+captionInput.addEventListener('input', countCharacters(captionCount));
 uploadInput.addEventListener('input', disableSave);
 searchInput.addEventListener('input', search);
-saveBtn.addEventListener('click', getPhotoData);
-favoritesBtn.addEventListener('click', getFavorites);
+saveBtn.addEventListener('click', addNewPhoto);
+favoritesBtn.addEventListener('click', showFavorites);
 seeMoreBtn.addEventListener('click', seeMore);
 window.addEventListener('DOMContentLoaded', start);
 
 // Functions
 
-function addPhoto(e) {
+function getPhotoData(e) {
   const newPhoto = new Photo(Date.now(), titleInput.value, captionInput.value, e.target.result);
   photos.push(newPhoto);
   newPhoto.saveToStorage(photos);
@@ -55,7 +57,7 @@ function addCloneListeners(clone) {
   clone.querySelector('.photo-caption').addEventListener('keypress', blurInput);
   clone.querySelector('.photo-title').addEventListener('blur', saveEdits('title'));
   clone.querySelector('.photo-caption').addEventListener('blur', saveEdits('caption'));
-  clone.querySelector('.favorite-icon').addEventListener('click', toggleFavorite);
+  clone.querySelector('.favorite-icon').addEventListener('click', toggleFavroiteStatus);
   clone.querySelector('.delete-icon').addEventListener('click', removePhoto);
 }
 
@@ -67,22 +69,13 @@ function blurInput(e) {
 }
 
 function checkLength(album) {
-  album.length <= 10 ? hideElement(seeMoreBtn, 'true') : hideElement(seeMoreBtn, 'false');
+  album.length <= 10 ? hideElement(seeMoreBtn, true) : hideElement(seeMoreBtn, false);
 }
 
-function countCharacters(inputName) {
+function countCharacters(element) {
   return function(e) {
-    if(inputName === 'title') {
-      document.querySelector('#title-count span').innerText = titleInput.value.length;
-    } else {
-      document.querySelector('#caption-count span').innerText = captionInput.value.length;
-    }
+    element.innerText = e.target.value.length;
   }
-}
-
-function countFavorites(photos) {
-  const favorites = photos.filter(photo => photo.favorite);
-  return favorites.length;
 }
 
 function createPhoto(photo) {
@@ -110,23 +103,22 @@ function displayPhotos(album, size = 10) {
 }
 
 function filterFavortites(photos) {
-  return favorites = photos.filter(photo => photo.favorite);
+  return photos.filter(photo => photo.favorite);
 }
 
 function filterSearch(album, query) {
   return album.filter(photo => photo.title.toLowerCase().includes(query) || photo.caption.toLowerCase().includes(query));
 }
 
-function getFavorites(e) {
+function showFavorites(e) {
   e.preventDefault();
   if(favoritesBtn.innerText !== 'View All') {
-    currentPhotos = filterFavortites(photos);
+    photosToDisplay = filterFavortites(photos);
   } else {
-    currentPhotos = photos;
+    photosToDisplay = photos;
   }
-  displayPhotos(currentPhotos);
+  displayPhotos(photosToDisplay);
   toggleFavoriteButton();
-  searchInput.value = '';
   seeMoreBtn.innerText = 'See More'
 }
 
@@ -136,20 +128,20 @@ function getIndex(e) {
   return photos.findIndex(photo => photo.id === parentID);
 }
 
-function getPhotoData(e) {
+function addNewPhoto(e) {
   e.preventDefault();
   reader.readAsDataURL(uploadInput.files[0]);
   reader.onload = e => {
-    const newPhoto = addPhoto(e);
+    const newPhoto = getPhotoData(e);
     photoArea.insertBefore(newPhoto, photoArea.firstChild);
     displayPhotos(photos);
-    seeMoreBtn.innerText = 'See More'
-    hideElement(emptyText, 'true');
+    resetFields();
+    hideElement(emptyText, true);
   }
 }
 
 function hideElement(element, status) {
-    if(status === 'true') {
+    if(status) {
     element.classList.add('hidden');
   } else {
     element.classList.remove('hidden');
@@ -165,9 +157,19 @@ function removePhoto(e) {
   const i = getIndex(e);
   const photoToDelete = reinstantiatePhoto(photos, i);
   photoToDelete.deleteFromStorage(photos, i);
-  photos.length > 0 ? hideElement(emptyText, 'true') : hideElement(emptyText, 'false');
-  toggleFavoriteButton();
-  displayPhotos(currentPhotos);
+  photos.length > 0 ? hideElement(emptyText, true) : hideElement(emptyText, false);
+  if(favoritesBtn.innerText !== 'View All') {
+     toggleFavoriteButton();
+   }
+}
+
+function resetFields() {
+  titleInput.value = '';
+  titleCount.innerText = 0;
+  captionInput.value = '';
+  captionCount.innerText = 0;
+  searchInput.value = '';
+  seeMoreBtn.innerText = 'See More';
 }
 
 function saveOnEnter(e) {
@@ -187,7 +189,7 @@ function saveEdits(editedContent) {
 
 function search() {
   const query = searchInput.value;
-  const results = filterSearch(currentPhotos, query);
+  const results = filterSearch(photosToDisplay, query);
   displayPhotos(results);
   seeMoreBtn.innerText = 'See More'
 }
@@ -196,40 +198,40 @@ function seeMore(e) {
   e.preventDefault();
   if(seeMoreBtn.innerText === 'See More') {
     seeMoreBtn.innerText = 'See Less';
-    displayPhotos(currentPhotos, currentPhotos.length);
+    displayPhotos(photosToDisplay, photosToDisplay.length);
   } else {
     seeMoreBtn.innerText = 'See More';
-    displayPhotos(currentPhotos);
+    displayPhotos(photosToDisplay);
   }
 }
 
 function start() {
-  favoritesBtn.innerText = `View ${countFavorites(photos)} Favorite(s)`;
+  favoritesBtn.innerText = `View ${filterFavortites(photos).length} Favorite(s)`;
   if(photos.length > 0) {
-    hideElement(emptyText, 'true');
+    hideElement(emptyText, true);
     displayPhotos(photos)
   }
 }
 
-function toggleFavorite(e) {
+function toggleFavroiteStatus(e) {
   const i = getIndex(e);
   const photoToFavorite = reinstantiatePhoto(photos, i);
   photoToFavorite.updateFavorite(photos, i);
-  toggleIcon(photoToFavorite, e);
+  toggleFavoriteIcon(photoToFavorite, e);
   if(favoritesBtn.innerText !== 'View All') {
-    favoritesBtn.innerText = `View ${countFavorites(photos)} Favorite(s)`;
+    favoritesBtn.innerText = `View ${filterFavortites(photos).length} Favorite(s)`;
   }
 }
 
 function toggleFavoriteButton() {
   if(favoritesBtn.innerText === 'View All') {
-    favoritesBtn.innerText = `View ${countFavorites(photos)} Favorite(s)`;
+    favoritesBtn.innerText = `View ${filterFavortites(photos).length} Favorite(s)`;
   } else {
     favoritesBtn.innerText = 'View All';
   }
 }
 
-function toggleIcon(photo, e) {
+function toggleFavoriteIcon(photo, e) {
   if(photo.favorite) {
     e.target.src = 'images/favorite-active.svg';
   } else {
@@ -241,7 +243,7 @@ function toggleIcon(photo, e) {
 }
 
 function toggleView(album, size) {
-  if(album.length < 10) {
+  if(album.length < size) {
     return album;
   } else {
     return album.slice(album.length - size, album.length);
