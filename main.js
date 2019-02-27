@@ -209,9 +209,8 @@ function saveEdits(editedContent, e) {
 function search() {
   const query = searchInput.value;
   const results = filterSearch(photosToDisplay, query);
-  if(query.length === 0) {
+  if(query.length < 1) {
     displayPhotos(results, 10);
-    hideElement(seeMoreBtn, false);
   } else {
     displayPhotos(results, results.length);
     hideElement(seeMoreBtn, true);
