@@ -29,4 +29,4 @@ Features:
 
 ## Known Issues
 
-- The show more button appears when clearing search even if there are less than 10 photos
+- None
