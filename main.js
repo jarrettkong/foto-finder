@@ -121,6 +121,7 @@ function toggleFavoriteView(e) {
     showFavorites();
   } else {
     hideFavorites();
+    seeMoreBtn.innerText = 'See More';
   }
   updateFavoriteButton();
   toggleFavoriteButton();
@@ -135,7 +136,6 @@ function showFavorites() {
 function hideFavorites() {
   photosToDisplay = photos;
   displayPhotos(photosToDisplay);
-  hideElement(seeMoreBtn, false);
 }
 
 function getIndex(e) {
