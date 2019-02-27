@@ -175,7 +175,6 @@ function removePhoto(e) {
   photoToDelete.deleteFromStorage(photos, i);
   photos.length > 0 ? hideElement(emptyText, true) : hideElement(emptyText, false);
   updateFavoriteButton();
-  if (photosToDisplay.length > 0) displayPhotos(photosToDisplay);
 }
 
 function updateFavoriteButton() {
