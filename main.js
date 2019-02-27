@@ -21,6 +21,28 @@ let photosToDisplay = photos;
 
 // Event listeners
 
+photoArea.addEventListener('click', e => {
+  if(e.target.classList.contains('favorite-icon')) {
+    toggleFavoriteStatus(e);
+  } else if (e.target.classList.contains('delete-icon')) {
+    removePhoto(e);
+  }
+});
+
+photoArea.addEventListener('keypress', e => {
+  if(e.key === 'Enter') {
+    e.target.blur();
+  }
+});
+
+photoArea.addEventListener('focusout', e => {
+  if(e.target.classList.contains('photo-title')) {
+    saveEdits('title', e);
+  } else {
+    saveEdits('caption', e);
+  }
+});
+
 titleInput.addEventListener('keypress', saveOnEnter);
 titleInput.addEventListener('input', disableSave);
 titleInput.addEventListener('input', countCharacters(titleCount));
@@ -30,7 +52,7 @@ captionInput.addEventListener('input', countCharacters(captionCount));
 uploadInput.addEventListener('input', disableSave);
 searchInput.addEventListener('input', search);
 saveBtn.addEventListener('click', addNewPhoto);
-favoritesBtn.addEventListener('click', showFavorites);
+favoritesBtn.addEventListener('click', toggleFavoriteView);
 seeMoreBtn.addEventListener('click', seeMore);
 window.addEventListener('DOMContentLoaded', start);
 
@@ -52,22 +74,6 @@ function addCloneInfo(clone, photo) {
   clone.querySelector('.favorite-icon').src = photo.favorite ? "images/favorite-active.svg" : "images/favorite.svg";
 }
 
-function addCloneListeners(clone) {
-  clone.querySelector('.photo-title').addEventListener('keypress', blurInput);
-  clone.querySelector('.photo-caption').addEventListener('keypress', blurInput);
-  clone.querySelector('.photo-title').addEventListener('blur', saveEdits('title'));
-  clone.querySelector('.photo-caption').addEventListener('blur', saveEdits('caption'));
-  clone.querySelector('.favorite-icon').addEventListener('click', toggleFavroiteStatus);
-  clone.querySelector('.delete-icon').addEventListener('click', removePhoto);
-}
-
-function blurInput(e) {
-  if(e.key === "Enter") {
-    e.preventDefault();
-    e.target.blur();
-  }
-}
-
 function checkLength(album) {
   album.length <= 10 ? hideElement(seeMoreBtn, true) : hideElement(seeMoreBtn, false);
 }
@@ -81,7 +87,6 @@ function countCharacters(element) {
 function createPhoto(photo) {
   const photoClone = photoTemplate.content.cloneNode(true);
   addCloneInfo(photoClone, photo);
-  addCloneListeners(photoClone);
   return photoClone;
 }
 
@@ -110,16 +115,27 @@ function filterSearch(album, query) {
   return album.filter(photo => photo.title.toLowerCase().includes(query) || photo.caption.toLowerCase().includes(query));
 }
 
-function showFavorites(e) {
+function toggleFavoriteView(e) {
   e.preventDefault();
   if(favoritesBtn.innerText !== 'View All') {
-    photosToDisplay = filterFavortites(photos);
+    showFavorites();
   } else {
-    photosToDisplay = photos;
+    hideFavorites();
   }
-  displayPhotos(photosToDisplay);
+  updateFavoriteButton();
   toggleFavoriteButton();
-  seeMoreBtn.innerText = 'See More'
+}
+
+function showFavorites() {
+  photosToDisplay = filterFavortites(photos);
+  displayPhotos(photosToDisplay, photosToDisplay.length);
+  hideElement(seeMoreBtn, true);
+}
+
+function hideFavorites() {
+  photosToDisplay = photos;
+  displayPhotos(photosToDisplay);
+  hideElement(seeMoreBtn, false);
 }
 
 function getIndex(e) {
@@ -158,11 +174,13 @@ function removePhoto(e) {
   const photoToDelete = reinstantiatePhoto(photos, i);
   photoToDelete.deleteFromStorage(photos, i);
   photos.length > 0 ? hideElement(emptyText, true) : hideElement(emptyText, false);
+  updateFavoriteButton();
+  if (photosToDisplay.length > 0) displayPhotos(photosToDisplay);
+}
+
+function updateFavoriteButton() {
   if (favoritesBtn.innerText !== 'View All') {
     favoritesBtn.innerText = `View ${filterFavortites(photos).length} Favorite(s)`;
-    displayPhotos(photosToDisplay);
-  } else {
-    displayPhotos(filterFavortites(photos));
   }
 }
 
@@ -183,29 +201,32 @@ function saveOnEnter(e) {
   }
 }
 
-function saveEdits(editedContent) {
-  return function(e) {
-    const i = getIndex(e);
-    const photoToEdit = reinstantiatePhoto(photos, i);
-    photoToEdit.updatePhoto(photos, i, editedContent, e.target.value);
-  }
+function saveEdits(editedContent, e) {
+  const i = getIndex(e);
+  const photoToEdit = reinstantiatePhoto(photos, i);
+  photoToEdit.updatePhoto(photos, i, editedContent, e.target.value);
 }
 
 function search() {
   const query = searchInput.value;
   const results = filterSearch(photosToDisplay, query);
-  displayPhotos(results);
-  seeMoreBtn.innerText = 'See More'
+  if(query.length === 0) {
+    displayPhotos(results, 10);
+    hideElement(seeMoreBtn, false);
+  } else {
+    displayPhotos(results, results.length);
+    hideElement(seeMoreBtn, true);
+  }
 }
 
 function seeMore(e) {
   e.preventDefault();
   if(seeMoreBtn.innerText === 'See More') {
     seeMoreBtn.innerText = 'See Less';
-    displayPhotos(photosToDisplay, photosToDisplay.length);
+    displayPhotos(photos, photos.length);
   } else {
     seeMoreBtn.innerText = 'See More';
-    displayPhotos(photosToDisplay);
+    displayPhotos(photos);
   }
 }
 
@@ -217,14 +238,12 @@ function start() {
   }
 }
 
-function toggleFavroiteStatus(e) {
+function toggleFavoriteStatus(e) {
   const i = getIndex(e);
   const photoToFavorite = reinstantiatePhoto(photos, i);
   photoToFavorite.updateFavorite(photos, i);
   toggleFavoriteIcon(photoToFavorite, e);
-  if(favoritesBtn.innerText !== 'View All') {
-    favoritesBtn.innerText = `View ${filterFavortites(photos).length} Favorite(s)`;
-  }
+  updateFavoriteButton();
 }
 
 function toggleFavoriteButton() {
